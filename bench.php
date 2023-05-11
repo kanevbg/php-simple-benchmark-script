@@ -9,8 +9,8 @@
 #  Company     : Code24 BV, The Netherlands                                    #
 #  Author      : Sergey Dryabzhinsky                                           #
 #  Company     : Rusoft Ltd, Russia                                            #
-#  Date        : Feb 17, 2023                                                  #
-#  Version     : 1.0.51                                                        #
+#  Date        : May 11, 2023                                                  #
+#  Version     : 1.0.52                                                        #
 #  License     : Creative Commons CC-BY license                                #
 #  Website     : https://github.com/rusoft/php-simple-benchmark-script         #
 #  Website     : https://git.rusoft.ru/open-source/php-simple-benchmark-script #
@@ -18,7 +18,7 @@
 ################################################################################
 */
 
-$scriptVersion = '1.0.51';
+$scriptVersion = '1.0.52';
 
 // Special string to flush buffers, nginx for example
 $flushStr = '<!-- '.str_repeat(" ", 8192).' -->';
@@ -222,6 +222,19 @@ function print_norm($msg) {
 	}
 	flush();
 	$messagesCnt++;
+}
+
+
+if (!function_exists('gethostname')) {
+	// 5.3.0+ only
+	function gethostname() {
+		on_start();
+		$last_str = system(`hostname -f`, $errcode);
+		if ($last_str !== false) {
+			return $last_str;
+		}
+		return '';
+	}
 }
 
 
@@ -1504,7 +1517,8 @@ function print_results_common()
 		. str_pad("PHP BENCHMARK SCRIPT", $padHeader, " ", STR_PAD_BOTH)
 		. "|\n$line\n"
 		. str_pad("Start", $padInfo) . " : " . date("Y-m-d H:i:s") . "\n"
-		. str_pad("Server", $padInfo) . " : " . php_uname('s') . '/' . php_uname('r') . ' ' . php_uname('m') . "\n"
+		. str_pad("Server name", $padInfo) . " : " . gethostname() . "\n"
+		. str_pad("Server system", $padInfo) . " : " . php_uname('s') . '/' . php_uname('r') . ' ' . php_uname('m') . "\n"
 		. str_pad("Platform", $padInfo) . " : " . PHP_OS . "\n"
 		. str_pad("System", $padInfo) . " : " . get_current_os() . "\n"
 		. str_pad("CPU", $padInfo) . " :\n"
@@ -1577,6 +1591,9 @@ function print_results_common()
 
 	} // show only system info?
 
+	echo "$line\n";
+	echo str_pad("End", $padInfo) . " : " . date("Y-m-d H:i:s") . "\n";
+
 	if (php_sapi_name() != 'cli')
 		echo "</pre>\n";
 	flush();
@@ -1592,7 +1609,8 @@ function print_results_machine()
 	echo ""
 		. "PHP_BENCHMARK_SCRIPT: $scriptVersion\n"
 		. "START: " . date("Y-m-d H:i:s") . "\n"
-		. "SERVER: " . php_uname('s') . '/' . php_uname('r') . ' ' . php_uname('m') . "\n"
+		. "SERVER_name: " . gethostname() . "\n"
+		. "SERVER_sys: " . php_uname('s') . '/' . php_uname('r') . ' ' . php_uname('m') . "\n"
 		. "SYSTEM: " . get_current_os() . "\n"
 		. "PHP_VERSION: " . PHP_VERSION . "\n"
 		;
@@ -1627,6 +1645,8 @@ function print_results_machine()
 		flush();
 
 	}
+
+	echo "END: " . date("Y-m-d H:i:s") . "\n";
 }
 
 function print_results_json()
@@ -1639,7 +1659,8 @@ function print_results_json()
 	echo ""
 		. "\"php_benchmark_script\": \"$scriptVersion\",\n"
 		. "\"start\": \"" . date("Y-m-d H:i:s") . "\",\n"
-		. "\"server\": \"" . php_uname('s') . '/' . php_uname('r') . ' ' . php_uname('m') . "\",\n"
+		. "\"server_name\": \"" . gethostname() . "\",\n"
+		. "\"server_sys\": \"" . php_uname('s') . '/' . php_uname('r') . ' ' . php_uname('m') . "\",\n"
 		. "\"system\": \"" . get_current_os() . "\",\n"
 		. "\"php_version\": \"" . PHP_VERSION . "\",\n"
 		;
@@ -1679,7 +1700,7 @@ function print_results_json()
 		echo $resultSecFmt . ", \"op\/sec\":" . $resultOps . ", \"op\/sec\/MHz\":" . $resultOpMhz . " },\n";
 	}
 	print("\"messages_count\": {$messagesCnt},\n");
-	print("\"end\":true\n}" . PHP_EOL);
+	print("\"end\":\"".date("Y-m-d H:i:s")."\"\n}" . PHP_EOL);
 	flush();
 }
 
