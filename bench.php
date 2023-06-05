@@ -9,8 +9,8 @@
 #  Company     : Code24 BV, The Netherlands                                    #
 #  Author      : Sergey Dryabzhinsky                                           #
 #  Company     : Rusoft Ltd, Russia                                            #
-#  Date        : May 11, 2023                                                  #
-#  Version     : 1.0.52                                                        #
+#  Date        : Jun 05, 2023                                                  #
+#  Version     : 1.0.52.1                                                      #
 #  License     : Creative Commons CC-BY license                                #
 #  Website     : https://github.com/rusoft/php-simple-benchmark-script         #
 #  Website     : https://git.rusoft.ru/open-source/php-simple-benchmark-script #
@@ -18,7 +18,7 @@
 ################################################################################
 */
 
-$scriptVersion = '1.0.52';
+$scriptVersion = '1.0.52.1';
 
 // Special string to flush buffers, nginx for example
 $flushStr = '<!-- '.str_repeat(" ", 8192).' -->';
@@ -1589,10 +1589,13 @@ function print_results_common()
 				: ''
 			);
 
-	} // show only system info?
+		echo "$line\n";
+		echo str_pad("End", $padLabel) . " : " . date("Y-m-d H:i:s") . "\n";
 
-	echo "$line\n";
-	echo str_pad("End", $padInfo) . " : " . date("Y-m-d H:i:s") . "\n";
+	} // show only system info?
+	else {
+		echo str_pad("End", $padInfo) . " : " . date("Y-m-d H:i:s") . "\n";
+	}
 
 	if (php_sapi_name() != 'cli')
 		echo "</pre>\n";
