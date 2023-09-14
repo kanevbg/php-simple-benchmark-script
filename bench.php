@@ -10,7 +10,7 @@
 #  Author      : Sergey Dryabzhinsky                                           #
 #  Company     : Rusoft Ltd, Russia                                            #
 #  Date        : Jun 05, 2023                                                  #
-#  Version     : 1.0.52.1                                                      #
+#  Version     : 1.0.54                                                        #
 #  License     : Creative Commons CC-BY license                                #
 #  Website     : https://github.com/rusoft/php-simple-benchmark-script         #
 #  Website     : https://git.rusoft.ru/open-source/php-simple-benchmark-script #
@@ -18,7 +18,7 @@
 ################################################################################
 */
 
-$scriptVersion = '1.0.52.1';
+$scriptVersion = '1.0.54';
 
 // Special string to flush buffers, nginx for example
 $flushStr = '<!-- '.str_repeat(" ", 8192).' -->';
@@ -66,6 +66,12 @@ if (php_sapi_name() == 'cli') {
 }
 
 /** ------------------------------- Main Defaults ------------------------------- */
+
+$has_igb = "{$colorYellow}no{$colorReset}";
+if (extension_loaded('igbinary')) {
+	$has_igb = "{$colorGreen}yes{$colorReset}";
+	@include("igbinary.inc");
+}
 
 $originMemoryLimit = @ini_get('memory_limit');
 $originTimeLimit = @ini_get('max_execution_time');
@@ -657,6 +663,8 @@ $testsLoopLimits = array(
 	'10_json_decode'	=> 1300000,
 	'11_serialize'		=> 1300000,
 	'12_unserialize'	=> 1300000,
+	'11_igb_serialize'		=> 1300000,
+	'12_igb_unserialize'	=> 1300000,
 	'13_array_loop'		=> 250,
 	'14_array_loop'		=> 250,
 	'15_clean_loops'	=> 200000000,
@@ -679,6 +687,8 @@ $testsLoopLimits = array(
 	'31_intl_message_format'	=> 200000,
 	'32_intl_calendar'			=> 300000,
 	'33_phpinfo_generate'		=> 10000,
+	'34_gd_qrcode'		=> 700,
+	'35_imagick_qrcode'		=> 200,
 );
 // Should not be more than X Mb
 // Different PHP could use different amount of memory
@@ -698,6 +708,8 @@ $testsMemoryLimits = array(
 	'10_json_decode'	=> 4,
 	'11_serialize'		=> 4,
 	'12_unserialize'	=> 4,
+	'11_igb_serialize'		=> 4,
+	'12_igb_unserialize'	=> 4,
 	// php-5.3
 	'13_array_loop'		=> 54,
 	'14_array_loop'		=> 62,
@@ -722,6 +734,8 @@ $testsMemoryLimits = array(
 	'31_intl_message_format'	=> 14,
 	'32_intl_calendar'			=> 14,
 	'33_phpinfo_generate'		=> 14,
+	'34_gd_qrcode'		=> 14,
+	'35_imagick_qrcode'		=> 8,
 );
 
 /** ---------------------------------- Common functions -------------------------------------------- */
@@ -1375,7 +1389,38 @@ if (is_file('common.inc')) {
 	}
 	exit(1);
 }
-
+/*
+if (is_file('php-gd.inc')) {
+	if (extension_loaded('gd')) {
+		include_once 'php-gd.inc';
+	} else {
+		print_pre("${line}\n{$colorYellow}<<< WARNING >>>{$colorReset} Extension 'gd' not loaded or not compiled! Image manipulation tests will be skipped!\n$line");
+	}
+} else {
+	print_pre("$line\n{$colorRed}<<< ERROR >>>{$colorReset}\nMissing file 'php-gd.inc' with common tests!\n$line");
+	if ($printJson) {
+		print("\"messages_count\": {$messagesCnt},\n");
+		print("\"end\":true\n}" . PHP_EOL);
+	}
+	exit(1);
+}
+*/
+/*
+if (is_file('php-imagick.inc')) {
+	if (extension_loaded('imagick')) {
+		include_once 'php-imagick.inc';
+	} else {
+		print_pre("${line}\n{$colorYellow}<<< WARNING >>>{$colorReset} Extension 'imagick' not loaded or not compiled! Image manipulation tests will be skipped!\n$line");
+	}
+} else {
+	print_pre("$line\n{$colorRed}<<< ERROR >>>{$colorReset}\nMissing file 'php-imagick.inc' with common tests!\n$line");
+	if ($printJson) {
+		print("\"messages_count\": {$messagesCnt},\n");
+		print("\"end\":true\n}" . PHP_EOL);
+	}
+	exit(1);
+}
+*/
 if ((int)$phpversion[0] >= 5) {
 	if (is_file('php5.inc')) {
 		include_once 'php5.inc';
@@ -1472,6 +1517,14 @@ $has_eacc = "{$colorGreen}no{$colorReset}";
 if (extension_loaded('eAccelerator')) {
 	$has_eacc = "{$colorYellow}yes{$colorReset}";
 }
+$has_gd = "{$colorYellow}no{$colorReset}";
+if (extension_loaded('gd')) {
+	$has_gd = "{$colorGreen}yes{$colorReset}";
+}
+$has_imagick = "{$colorYellow}no{$colorReset}";
+if (extension_loaded('imagick')) {
+	$has_imagick = "{$colorGreen}yes{$colorReset}";
+}
 $has_xdebug = "{$colorGreen}no{$colorReset}";
 if (extension_loaded('xdebug')) {
 	print_pre("{$colorYellow}<<< WARNING >>>{$colorReset} Extension 'xdebug' loaded! It will affect results and slow things greatly! Even if not enabled!\n");
@@ -1508,6 +1561,7 @@ function print_results_common()
 
 	global $line, $padHeader, $cpuInfo, $padInfo, $scriptVersion, $maxTime, $originTimeLimit, $originMemoryLimit, $cryptAlgoName, $memoryLimitMb;
 	global $flushStr, $has_apc, $has_pcre, $has_intl, $has_json, $has_simplexml, $has_dom, $has_mbstring, $has_opcache, $has_xcache;
+	global $has_gd, $has_imagick, $has_igb;
 	global $opcache, $has_eacc, $has_xdebug, $xcache, $apcache, $eaccel, $xdebug, $xdbg_mode, $obd_set, $mbover;
 	global $showOnlySystemInfo, $padLabel, $functions, $runOnlySelectedTests, $selectedTests, $totalOps;
 	global $colorGreen, $colorReset, $colorRed;
@@ -1541,6 +1595,11 @@ function print_results_common()
 		. str_pad("simplexml", $padInfo, ' ', STR_PAD_LEFT) . " : $has_simplexml; libxml version: ".LIBXML_DOTTED_VERSION."\n"
 		. str_pad("dom", $padInfo, ' ', STR_PAD_LEFT) . " : $has_dom\n"
 		. str_pad("intl", $padInfo, ' ', STR_PAD_LEFT) . " : $has_intl" . ($has_intl == "{$colorGreen}yes{$colorReset}" ? '; icu version: ' . INTL_ICU_VERSION : '')."\n"
+		. str_pad("-optional->", $padInfo, ' ', STR_PAD_LEFT) . "\n"
+		. str_pad("gd", $padInfo, ' ', STR_PAD_LEFT) . " : $has_gd\n"
+		. str_pad("imagick", $padInfo, ' ', STR_PAD_LEFT) . " : $has_imagick\n"
+		. str_pad("-alternative->", $padInfo, ' ', STR_PAD_LEFT) . "\n"
+		. str_pad("igbinary", $padInfo, ' ', STR_PAD_LEFT) . " : $has_igb\n"
 		. str_pad("-affecting->", $padInfo, ' ', STR_PAD_LEFT) . "\n"
 		. str_pad("opcache", $padInfo, ' ', STR_PAD_LEFT) . " : $has_opcache; enabled: {$opcache}\n"
 		. str_pad("xcache", $padInfo, ' ', STR_PAD_LEFT) . " : $has_xcache; enabled: {$xcache}\n"
