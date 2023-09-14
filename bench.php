@@ -10,7 +10,7 @@
 #  Author      : Sergey Dryabzhinsky                                           #
 #  Company     : Rusoft Ltd, Russia                                            #
 #  Date        : Jun 05, 2023                                                  #
-#  Version     : 1.0.55                                                        #
+#  Version     : 1.0.56                                                        #
 #  License     : Creative Commons CC-BY license                                #
 #  Website     : https://github.com/rusoft/php-simple-benchmark-script         #
 #  Website     : https://git.rusoft.ru/open-source/php-simple-benchmark-script #
@@ -18,7 +18,7 @@
 ################################################################################
 */
 
-$scriptVersion = '1.0.55';
+$scriptVersion = '1.0.56';
 
 // Special string to flush buffers, nginx for example
 $flushStr = '<!-- '.str_repeat(" ", 8192).' -->';
@@ -77,6 +77,16 @@ $has_msg = "{$colorYellow}no{$colorReset}";
 if (extension_loaded('msgpack')) {
 	$has_msg = "{$colorGreen}yes{$colorReset}";
 	@include("msgpack.inc");
+}
+
+if (extension_loaded('zstd')) {
+	@include_once("compression.inc");
+}
+if (extension_loaded('lz4')) {
+	@include_once("compression.inc");
+}
+if (extension_loaded('brotli')) {
+	@include_once("compression.inc");
 }
 
 $originMemoryLimit = @ini_get('memory_limit');
@@ -697,6 +707,12 @@ $testsLoopLimits = array(
 	'33_phpinfo_generate'		=> 10000,
 	'34_gd_qrcode'		=> 700,
 	'35_imagick_qrcode'		=> 200,
+	'36_zlib_compress'	=> 5000000,
+	'36_gzip_compress'	=> 5000000,
+	'36_bzip2_compress'	=>  500000,
+	'36_lz4_compress'	=> 5000000,
+	'36_zstd_compress'	=> 5000000,
+	'36_brotli_compress'	=> 1000000,
 );
 // Should not be more than X Mb
 // Different PHP could use different amount of memory
@@ -744,6 +760,12 @@ $testsMemoryLimits = array(
 	'33_phpinfo_generate'		=> 14,
 	'34_gd_qrcode'		=> 14,
 	'35_imagick_qrcode'		=> 8,
+	'36_zlib_compress'		=> 4,
+	'36_gzip_compress'		=> 4,
+	'36_bzip2_compress'		=> 4,
+	'36_lz4_compress'		=> 4,
+	'36_zstd_compress'		=> 4,
+	'36_brotli_compress'		=> 4,
 );
 
 /** ---------------------------------- Common functions -------------------------------------------- */
@@ -1558,6 +1580,26 @@ $has_intl = "{$colorYellow}no{$colorReset}";
 if (extension_loaded('intl')) {
 	$has_intl = "{$colorGreen}yes{$colorReset}";
 }
+$has_zlib = "{$colorYellow}no{$colorReset}";
+if (extension_loaded('zlib')) {
+	$has_zlib = "{$colorGreen}yes{$colorReset}";
+}
+$has_bz2 = "{$colorYellow}no{$colorReset}";
+if (extension_loaded('bz2')) {
+	$has_bz2 = "{$colorGreen}yes{$colorReset}";
+}
+$has_lz4 = "{$colorYellow}no{$colorReset}";
+if (extension_loaded('lz4')) {
+	$has_lz4 = "{$colorGreen}yes{$colorReset}";
+}
+$has_zstd = "{$colorYellow}no{$colorReset}";
+if (extension_loaded('zstd')) {
+	$has_zstd = "{$colorGreen}yes{$colorReset}";
+}
+$has_brotli = "{$colorYellow}no{$colorReset}";
+if (extension_loaded('brotli')) {
+	$has_brotli = "{$colorGreen}yes{$colorReset}";
+}
 
 $has_jsond = "{$colorYellow}no{$colorReset}";
 $has_jsond_as_json = "{$colorYellow}no{$colorReset}";
@@ -1579,6 +1621,7 @@ function print_results_common()
 	global $line, $padHeader, $cpuInfo, $padInfo, $scriptVersion, $maxTime, $originTimeLimit, $originMemoryLimit, $cryptAlgoName, $memoryLimitMb;
 	global $flushStr, $has_apc, $has_pcre, $has_intl, $has_json, $has_simplexml, $has_dom, $has_mbstring, $has_opcache, $has_xcache;
 	global $has_gd, $has_imagick, $has_igb, $has_msg, $has_jsond, $has_jsond_as_json;
+	global $has_zlib, $has_bz2, $has_lz4, $has_zstd, $has_brotli;
 	global $opcache, $has_eacc, $has_xdebug, $xcache, $apcache, $eaccel, $xdebug, $xdbg_mode, $obd_set, $mbover;
 	global $showOnlySystemInfo, $padLabel, $functions, $runOnlySelectedTests, $selectedTests, $totalOps;
 	global $colorGreen, $colorReset, $colorRed;
@@ -1620,6 +1663,12 @@ function print_results_common()
 		. str_pad("msgpack", $padInfo, ' ', STR_PAD_LEFT) . " : $has_msg\n"
 		. str_pad("jsond", $padInfo, ' ', STR_PAD_LEFT) . " : $has_jsond\n"
 		. str_pad("jsond as json >>", $padInfo, ' ', STR_PAD_LEFT) . " : $has_jsond_as_json\n"
+		. str_pad("-compression->", $padInfo, ' ', STR_PAD_LEFT) . "\n"
+		. str_pad("zlib", $padInfo, ' ', STR_PAD_LEFT) . " : $has_zlib\n"
+		. str_pad("bz2", $padInfo, ' ', STR_PAD_LEFT) . " : $has_bz2\n"
+		. str_pad("lz4", $padInfo, ' ', STR_PAD_LEFT) . " : $has_lz4\n"
+		. str_pad("zstd", $padInfo, ' ', STR_PAD_LEFT) . " : $has_zstd\n"
+		. str_pad("brotli", $padInfo, ' ', STR_PAD_LEFT) . " : $has_brotli\n"
 		. str_pad("-affecting->", $padInfo, ' ', STR_PAD_LEFT) . "\n"
 		. str_pad("opcache", $padInfo, ' ', STR_PAD_LEFT) . " : $has_opcache; enabled: {$opcache}\n"
 		. str_pad("xcache", $padInfo, ' ', STR_PAD_LEFT) . " : $has_xcache; enabled: {$xcache}\n"

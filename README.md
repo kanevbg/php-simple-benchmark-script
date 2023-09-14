@@ -30,7 +30,7 @@
 
 ### 0. Файлы
 
-Нужно положить в один каталог файлы: `bench.php`, `common.inc`, `php5.inc`, `php7.inc`, `igbinary.inc`, `msgpack.inc`, `test.xml`.
+Нужно положить в один каталог файлы: `bench.php`, `common.inc`, `php5.inc`, `php7.inc`, `igbinary.inc`, `msgpack.inc`, `compression.inc`, `test.xml`.
 
 ### 1. Через консоль
 
@@ -138,7 +138,7 @@ CPU                 :
               cores : 4
           available : 4
                 MHz : 3600 MHz
-Benchmark version   : 1.0.55
+Benchmark version   : 1.0.56
 PHP version         : 7.4.29-SergeyD/6.1
 PHP time limit      : 0 sec
 Setup time limit    : 600 sec
@@ -156,8 +156,14 @@ Crypt hash algo     : MD5
      -alternative->
            igbinary : yes
             msgpack : yes
-              jsond : yes
-   jsond as json >> : yes
+              jsond : no
+   jsond as json >> : no
+     -compression->
+               zlib : yes
+                bz2 : yes
+                lz4 : yes
+               zstd : yes
+             brotli : yes
        -affecting->
             opcache : yes; enabled: 0
              xcache : no; enabled: 0
@@ -215,6 +221,12 @@ TEST NAME                      :      SECONDS |       OP/SEC |      OP/SEC/MHz |
 31_intl_message_format         :    4.236 sec |  47.22 kOp/s |  12.46  Ops/MHz |      4 Mb
 32_intl_calendar               :    0.844 sec | 355.34 kOp/s |  93.79  Ops/MHz |      4 Mb
 33_phpinfo_generate            :    1.440 sec |   6.95 kOp/s |   1.83  Ops/MHz |      4 Mb
+36_brotli_compress             :    5.012 sec | 199.50 kOp/s |  51.47  Ops/MHz |      3 Mb
+36_bzip2_compress              :   22.065 sec |  22.66 kOp/s |   5.85  Ops/MHz |      3 Mb
+36_gzip_compress               :   52.977 sec |  94.38 kOp/s |  24.35  Ops/MHz |      3 Mb
+36_lz4_compress                :    0.378 sec |   1.32 MOp/s | 341.52  Ops/MHz |      3 Mb
+36_zlib_compress               :   51.905 sec |  96.33 kOp/s |  24.85  Ops/MHz |      3 Mb
+36_zstd_compress               :   27.937 sec | 178.98 kOp/s |  46.17  Ops/MHz |      3 Mb
 -------------------------------------------------------------------------------------------
 Total time:                    :   81.337 sec |  13.73 MOp/s |   3.62 kOps/MHz |
 Current PHP memory usage:      :        4 Mb
