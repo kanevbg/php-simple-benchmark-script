@@ -30,7 +30,7 @@
 
 ### 0. Файлы
 
-Нужно положить в один каталог файлы: `bench.php`, `common.inc`, `php5.inc`, `php7.inc`, `test.xml`.
+Нужно положить в один каталог файлы: `bench.php`, `common.inc`, `php5.inc`, `php7.inc`, `igbinary.inc`, `msgpack.inc`, `test.xml`.
 
 ### 1. Через консоль
 
@@ -138,7 +138,7 @@ CPU                 :
               cores : 4
           available : 4
                 MHz : 3600 MHz
-Benchmark version   : 1.0.47
+Benchmark version   : 1.0.55
 PHP version         : 7.4.29-SergeyD/6.1
 PHP time limit      : 0 sec
 Setup time limit    : 600 sec
@@ -153,6 +153,11 @@ Crypt hash algo     : MD5
           simplexml : yes; libxml version: 2.9.4
                 dom : yes
                intl : yes; icu version: 66.1
+     -alternative->
+           igbinary : yes
+            msgpack : yes
+              jsond : yes
+   jsond as json >> : yes
        -affecting->
             opcache : yes; enabled: 0
              xcache : no; enabled: 0
@@ -177,6 +182,12 @@ TEST NAME                      :      SECONDS |       OP/SEC |      OP/SEC/MHz |
 08_2_crypt                     :    8.698 sec |   1.15 kOp/s |   0.30  Ops/MHz |      4 Mb
 09_json_encode                 :    2.322 sec | 559.91 kOp/s | 147.78  Ops/MHz |      4 Mb
 10_json_decode                 :    3.556 sec | 365.54 kOp/s |  96.48  Ops/MHz |      4 Mb
+11_igb_serialize               :    2.894 sec | 449.19 kOp/s | 124.78  Ops/MHz |      3 Mb
+11_msgpack_pack                :    2.054 sec | 633.01 kOp/s | 175.84  Ops/MHz |      3 Mb
+11_serialize                   :    3.727 sec | 348.79 kOp/s |  96.89  Ops/MHz |      3 Mb
+12_igb_unserialize             :    2.123 sec | 612.31 kOp/s | 170.09  Ops/MHz |      3 Mb
+12_msgpack_unpack              :    2.657 sec | 489.30 kOp/s | 135.92  Ops/MHz |      3 Mb
+12_unserialize                 :    3.226 sec | 402.91 kOp/s | 111.92  Ops/MHz |      3 Mb
 11_serialize                   :    1.551 sec | 838.30 kOp/s | 221.25  Ops/MHz |      4 Mb
 12_unserialize                 :    1.677 sec | 774.97 kOp/s | 204.54  Ops/MHz |      4 Mb
 13_array_fill                  :    3.740 sec |  24.07 MOp/s |   6.35 kOps/MHz |     24 Mb

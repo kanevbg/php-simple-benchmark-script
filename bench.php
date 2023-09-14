@@ -10,7 +10,7 @@
 #  Author      : Sergey Dryabzhinsky                                           #
 #  Company     : Rusoft Ltd, Russia                                            #
 #  Date        : Jun 05, 2023                                                  #
-#  Version     : 1.0.54                                                        #
+#  Version     : 1.0.55                                                        #
 #  License     : Creative Commons CC-BY license                                #
 #  Website     : https://github.com/rusoft/php-simple-benchmark-script         #
 #  Website     : https://git.rusoft.ru/open-source/php-simple-benchmark-script #
@@ -18,7 +18,7 @@
 ################################################################################
 */
 
-$scriptVersion = '1.0.54';
+$scriptVersion = '1.0.55';
 
 // Special string to flush buffers, nginx for example
 $flushStr = '<!-- '.str_repeat(" ", 8192).' -->';
@@ -71,6 +71,12 @@ $has_igb = "{$colorYellow}no{$colorReset}";
 if (extension_loaded('igbinary')) {
 	$has_igb = "{$colorGreen}yes{$colorReset}";
 	@include("igbinary.inc");
+}
+
+$has_msg = "{$colorYellow}no{$colorReset}";
+if (extension_loaded('msgpack')) {
+	$has_msg = "{$colorGreen}yes{$colorReset}";
+	@include("msgpack.inc");
 }
 
 $originMemoryLimit = @ini_get('memory_limit');
@@ -665,6 +671,8 @@ $testsLoopLimits = array(
 	'12_unserialize'	=> 1300000,
 	'11_igb_serialize'		=> 1300000,
 	'12_igb_unserialize'	=> 1300000,
+	'11_msgpack_pack'		=> 1300000,
+	'12_msgpack_unpack'	=> 1300000,
 	'13_array_loop'		=> 250,
 	'14_array_loop'		=> 250,
 	'15_clean_loops'	=> 200000000,
@@ -1551,6 +1559,15 @@ if (extension_loaded('intl')) {
 	$has_intl = "{$colorGreen}yes{$colorReset}";
 }
 
+$has_jsond = "{$colorYellow}no{$colorReset}";
+$has_jsond_as_json = "{$colorYellow}no{$colorReset}";
+if ($jsond = extension_loaded('jsond')) {
+	$has_jsond = "{$colorGreen}yes{$colorReset}";
+}
+if ($jsond && !function_exists('jsond_encode')) {
+	$has_jsond_as_json = "{$colorGreen}yes{$colorReset}";
+}
+
 if (!defined('PCRE_VERSION')) define('PCRE_VERSION', '-.--');
 if (!defined('LIBXML_DOTTED_VERSION')) define('LIBXML_DOTTED_VERSION', '-.-.-');
 if (!defined('INTL_ICU_VERSION')) define('INTL_ICU_VERSION', '-.-');
@@ -1561,7 +1578,7 @@ function print_results_common()
 
 	global $line, $padHeader, $cpuInfo, $padInfo, $scriptVersion, $maxTime, $originTimeLimit, $originMemoryLimit, $cryptAlgoName, $memoryLimitMb;
 	global $flushStr, $has_apc, $has_pcre, $has_intl, $has_json, $has_simplexml, $has_dom, $has_mbstring, $has_opcache, $has_xcache;
-	global $has_gd, $has_imagick, $has_igb;
+	global $has_gd, $has_imagick, $has_igb, $has_msg, $has_jsond, $has_jsond_as_json;
 	global $opcache, $has_eacc, $has_xdebug, $xcache, $apcache, $eaccel, $xdebug, $xdbg_mode, $obd_set, $mbover;
 	global $showOnlySystemInfo, $padLabel, $functions, $runOnlySelectedTests, $selectedTests, $totalOps;
 	global $colorGreen, $colorReset, $colorRed;
@@ -1600,6 +1617,9 @@ function print_results_common()
 		. str_pad("imagick", $padInfo, ' ', STR_PAD_LEFT) . " : $has_imagick\n"
 		. str_pad("-alternative->", $padInfo, ' ', STR_PAD_LEFT) . "\n"
 		. str_pad("igbinary", $padInfo, ' ', STR_PAD_LEFT) . " : $has_igb\n"
+		. str_pad("msgpack", $padInfo, ' ', STR_PAD_LEFT) . " : $has_msg\n"
+		. str_pad("jsond", $padInfo, ' ', STR_PAD_LEFT) . " : $has_jsond\n"
+		. str_pad("jsond as json >>", $padInfo, ' ', STR_PAD_LEFT) . " : $has_jsond_as_json\n"
 		. str_pad("-affecting->", $padInfo, ' ', STR_PAD_LEFT) . "\n"
 		. str_pad("opcache", $padInfo, ' ', STR_PAD_LEFT) . " : $has_opcache; enabled: {$opcache}\n"
 		. str_pad("xcache", $padInfo, ' ', STR_PAD_LEFT) . " : $has_xcache; enabled: {$xcache}\n"
