@@ -12,6 +12,15 @@
 - dom
 - simplexml
 - intl
+- optional:
+  - gd
+  - imagick
+  - brotli
+  - zlib
+  - bz2
+  - zstd
+  - igbinary
+  - msgpack
 
 Обычно они уже установлены или "вкомпилированны" в php.
 
@@ -30,7 +39,7 @@
 
 ### 0. Файлы
 
-Нужно положить в один каталог файлы: `bench.php`, `common.inc`, `php5.inc`, `php7.inc`, `igbinary.inc`, `msgpack.inc`, `compression.inc`, `test.xml`.
+Нужно положить в один каталог файлы: `bench.php`, `common.inc`, `php5.inc`, `php7.inc`, `igbinary.inc`, `msgpack.inc`, `compression.inc`, `php-gd-imagick-common.inc`, `php-gd.inc`, `php-imagick.inc`, `test.xml`.
 
 ### 1. Через консоль
 
@@ -138,7 +147,7 @@ CPU                 :
               cores : 4
           available : 4
                 MHz : 3600 MHz
-Benchmark version   : 1.0.56
+Benchmark version   : 1.0.57
 PHP version         : 7.4.29-SergeyD/6.1
 PHP time limit      : 0 sec
 Setup time limit    : 600 sec
@@ -153,6 +162,9 @@ Crypt hash algo     : MD5
           simplexml : yes; libxml version: 2.9.4
                 dom : yes
                intl : yes; icu version: 66.1
+        -optional->
+                 gd : yes: version: 2.2.5
+            imagick : yes: version: ImageMagick 6.9.7-4 Q16 x86_64 20170114 http://www.imagemagick.org
      -alternative->
            igbinary : yes
             msgpack : yes
@@ -221,6 +233,8 @@ TEST NAME                      :      SECONDS |       OP/SEC |      OP/SEC/MHz |
 31_intl_message_format         :    4.236 sec |  47.22 kOp/s |  12.46  Ops/MHz |      4 Mb
 32_intl_calendar               :    0.844 sec | 355.34 kOp/s |  93.79  Ops/MHz |      4 Mb
 33_phpinfo_generate            :    1.440 sec |   6.95 kOp/s |   1.83  Ops/MHz |      4 Mb
+34_gd_qrcode                   :    0.923 sec |   1.08 kOp/s |   0.30  Ops/MHz |      4 Mb
+35_imagick_qrcode              :    2.839 sec | 352.18  Op/s |   0.10  Ops/MHz |      4 Mb
 36_brotli_compress             :    5.012 sec | 199.50 kOp/s |  51.47  Ops/MHz |      3 Mb
 36_bzip2_compress              :   22.065 sec |  22.66 kOp/s |   5.85  Ops/MHz |      3 Mb
 36_gzip_compress               :   52.977 sec |  94.38 kOp/s |  24.35  Ops/MHz |      3 Mb

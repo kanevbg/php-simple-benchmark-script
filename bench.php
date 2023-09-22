@@ -9,8 +9,8 @@
 #  Company     : Code24 BV, The Netherlands                                    #
 #  Author      : Sergey Dryabzhinsky                                           #
 #  Company     : Rusoft Ltd, Russia                                            #
-#  Date        : Jun 05, 2023                                                  #
-#  Version     : 1.0.56                                                        #
+#  Date        : Sep 22, 2023                                                  #
+#  Version     : 1.0.57                                                        #
 #  License     : Creative Commons CC-BY license                                #
 #  Website     : https://github.com/rusoft/php-simple-benchmark-script         #
 #  Website     : https://git.rusoft.ru/open-source/php-simple-benchmark-script #
@@ -18,7 +18,7 @@
 ################################################################################
 */
 
-$scriptVersion = '1.0.56';
+$scriptVersion = '1.0.57';
 
 // Special string to flush buffers, nginx for example
 $flushStr = '<!-- '.str_repeat(" ", 8192).' -->';
@@ -87,6 +87,14 @@ if (extension_loaded('lz4')) {
 }
 if (extension_loaded('brotli')) {
 	@include_once("compression.inc");
+}
+if (extension_loaded('gd')) {
+	@include_once("php-gd-imagick-common.inc");
+	@include_once("php-gd.inc");
+}
+if (extension_loaded('imagick')) {
+	@include_once("php-gd-imagick-common.inc");
+	@include_once("php-imagick.inc");
 }
 
 $originMemoryLimit = @ini_get('memory_limit');
@@ -705,8 +713,8 @@ $testsLoopLimits = array(
 	'31_intl_message_format'	=> 200000,
 	'32_intl_calendar'			=> 300000,
 	'33_phpinfo_generate'		=> 10000,
-	'34_gd_qrcode'		=> 700,
-	'35_imagick_qrcode'		=> 200,
+	'34_gd_qrcode'		=> 1000,
+	'35_imagick_qrcode'		=> 1000,
 	'36_zlib_compress'	=> 5000000,
 	'36_gzip_compress'	=> 5000000,
 	'36_bzip2_compress'	=>  500000,
@@ -1550,10 +1558,18 @@ if (extension_loaded('eAccelerator')) {
 $has_gd = "{$colorYellow}no{$colorReset}";
 if (extension_loaded('gd')) {
 	$has_gd = "{$colorGreen}yes{$colorReset}";
+	$info = gd_info();
+	define("GD_VERSION",$info["GD Version"]);
+} else {
+	define("GD_VERSION","-.-.-");
 }
 $has_imagick = "{$colorYellow}no{$colorReset}";
 if (extension_loaded('imagick')) {
 	$has_imagick = "{$colorGreen}yes{$colorReset}";
+	$imv = Imagick::getVersion();
+	define("IMG_VERSION", $imv["versionString"]);
+} else {
+	define("IMG_VERSION", "-.-.-");
 }
 $has_xdebug = "{$colorGreen}no{$colorReset}";
 if (extension_loaded('xdebug')) {
@@ -1581,8 +1597,12 @@ if (extension_loaded('intl')) {
 	$has_intl = "{$colorGreen}yes{$colorReset}";
 }
 $has_zlib = "{$colorYellow}no{$colorReset}";
+$has_gzip = "{$colorYellow}no{$colorReset}";
 if (extension_loaded('zlib')) {
 	$has_zlib = "{$colorGreen}yes{$colorReset}";
+	if(function_exists('gzencode')) {
+		$has_gzip = "{$colorGreen}yes{$colorReset}";
+	}
 }
 $has_bz2 = "{$colorYellow}no{$colorReset}";
 if (extension_loaded('bz2')) {
@@ -1621,7 +1641,7 @@ function print_results_common()
 	global $line, $padHeader, $cpuInfo, $padInfo, $scriptVersion, $maxTime, $originTimeLimit, $originMemoryLimit, $cryptAlgoName, $memoryLimitMb;
 	global $flushStr, $has_apc, $has_pcre, $has_intl, $has_json, $has_simplexml, $has_dom, $has_mbstring, $has_opcache, $has_xcache;
 	global $has_gd, $has_imagick, $has_igb, $has_msg, $has_jsond, $has_jsond_as_json;
-	global $has_zlib, $has_bz2, $has_lz4, $has_zstd, $has_brotli;
+	global $has_zlib, $has_gzip, $has_bz2, $has_lz4, $has_zstd, $has_brotli;
 	global $opcache, $has_eacc, $has_xdebug, $xcache, $apcache, $eaccel, $xdebug, $xdbg_mode, $obd_set, $mbover;
 	global $showOnlySystemInfo, $padLabel, $functions, $runOnlySelectedTests, $selectedTests, $totalOps;
 	global $colorGreen, $colorReset, $colorRed;
@@ -1656,8 +1676,8 @@ function print_results_common()
 		. str_pad("dom", $padInfo, ' ', STR_PAD_LEFT) . " : $has_dom\n"
 		. str_pad("intl", $padInfo, ' ', STR_PAD_LEFT) . " : $has_intl" . ($has_intl == "{$colorGreen}yes{$colorReset}" ? '; icu version: ' . INTL_ICU_VERSION : '')."\n"
 		. str_pad("-optional->", $padInfo, ' ', STR_PAD_LEFT) . "\n"
-		. str_pad("gd", $padInfo, ' ', STR_PAD_LEFT) . " : $has_gd\n"
-		. str_pad("imagick", $padInfo, ' ', STR_PAD_LEFT) . " : $has_imagick\n"
+		. str_pad("gd", $padInfo, ' ', STR_PAD_LEFT) . " : $has_gd: version: ". GD_VERSION."\n"
+		. str_pad("imagick", $padInfo, ' ', STR_PAD_LEFT) . " : $has_imagick: version: ".IMG_VERSION."\n"
 		. str_pad("-alternative->", $padInfo, ' ', STR_PAD_LEFT) . "\n"
 		. str_pad("igbinary", $padInfo, ' ', STR_PAD_LEFT) . " : $has_igb\n"
 		. str_pad("msgpack", $padInfo, ' ', STR_PAD_LEFT) . " : $has_msg\n"
@@ -1665,6 +1685,7 @@ function print_results_common()
 		. str_pad("jsond as json >>", $padInfo, ' ', STR_PAD_LEFT) . " : $has_jsond_as_json\n"
 		. str_pad("-compression->", $padInfo, ' ', STR_PAD_LEFT) . "\n"
 		. str_pad("zlib", $padInfo, ' ', STR_PAD_LEFT) . " : $has_zlib\n"
+		. str_pad("gzip", $padInfo, ' ', STR_PAD_LEFT) . " : $has_gzip\n"
 		. str_pad("bz2", $padInfo, ' ', STR_PAD_LEFT) . " : $has_bz2\n"
 		. str_pad("lz4", $padInfo, ' ', STR_PAD_LEFT) . " : $has_lz4\n"
 		. str_pad("zstd", $padInfo, ' ', STR_PAD_LEFT) . " : $has_zstd\n"
