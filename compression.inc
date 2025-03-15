@@ -6,7 +6,7 @@
 
 /** ---------------------------------- Tests functions -------------------------------------------- */
 
-function test_36_zlib_compress()
+function test_36_deflate_compress()
 {
 	global $stringTest, $emptyResult, $testsLoopLimits, $totalOps, $stringTest;
 
