@@ -6,7 +6,7 @@
 
 /** ---------------------------------- Tests functions -------------------------------------------- */
 
-function test_36_deflate_compress()
+function test_36_01_zlib_deflate_compress()
 {
 	global $stringTest, $emptyResult, $testsLoopLimits, $totalOps, $stringTest;
 
@@ -23,7 +23,7 @@ function test_36_deflate_compress()
 	return format_result_test(get_microtime() - $time_start, $count, mymemory_usage());
 }
 
-function test_36_gzip_compress()
+function test_36_02_zlib_gzip_compress()
 {
 	global $stringTest, $emptyResult, $testsLoopLimits, $totalOps, $stringTest;
 
