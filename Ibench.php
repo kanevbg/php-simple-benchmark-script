@@ -88,7 +88,7 @@ if (extension_loaded('lz4')) {
 if (extension_loaded('brotli')) {
 	@include_once("compression.inc");
 }
-if extension_loaded('zlib')) {
+if (extension_loaded('zlib')) {
 	@include_once("compression.inc");
 }
 if (extension_loaded('intl')) {
