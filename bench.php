@@ -88,6 +88,12 @@ if (extension_loaded('lz4')) {
 if (extension_loaded('brotli')) {
 	@include_once("compression.inc");
 }
+if extension_loaded('zlib')) {
+	@include_once("compression.inc");
+}
+if (extension_loaded('intl')) {
+	@include_once("intl.inc");
+}
 if (extension_loaded('gd')) {
 	@include_once("php-gd-imagick-common.inc");
 	@include_once("php-gd.inc");
