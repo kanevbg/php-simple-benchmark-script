@@ -3,13 +3,13 @@
 ################################################################################
 #                      PHP Benchmark Performance Script                        #
 #                           2010      Code24 BV                                #
-#                           2015-2023 Rusoft                                   #
+#                           2015-2025 Rusoft                                   #
 #                                                                              #
 #  Author      : Alessandro Torrisi                                            #
 #  Company     : Code24 BV, The Netherlands                                    #
 #  Author      : Sergey Dryabzhinsky                                           #
 #  Company     : Rusoft Ltd, Russia                                            #
-#  Date        : Sep 22, 2023                                                  #
+#  Date        : Mar 22, 2025                                                  #
 #  Version     : 1.0.58                                                        #
 #  License     : Creative Commons CC-BY license                                #
 #  Website     : https://github.com/rusoft/php-simple-benchmark-script         #
