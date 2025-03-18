@@ -1565,7 +1565,7 @@ $has_gd = "{$colorYellow}no{$colorReset}";
 if (extension_loaded('gd')) {
 	$has_gd = "{$colorGreen}yes{$colorReset}";
 	$info = gd_info();
-	define("GD_VERSION",$info["GD Version"]);
+	if(!defined("GD_VERSION")) define("GD_VERSION",$info["GD Version"]);
 } else {
 	define("GD_VERSION","-.-.-");
 }
