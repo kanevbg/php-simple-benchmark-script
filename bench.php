@@ -675,6 +675,7 @@ $dumbTestMaxPhpTimes = array(
 	'8.0' => 0.324,
 	'8.1' => 0.323,
 	'8.2' => 0.294,
+	'8.3' >= 0.784,
 );
 // Nice dice roll
 // Should not be longer than 600 seconds
