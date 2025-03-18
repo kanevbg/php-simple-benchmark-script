@@ -1609,7 +1609,7 @@ if (extension_loaded('zlib')) {
 	if(function_exists('gzencode')) {
 		$has_gzip = "{$colorGreen}yes{$colorReset}";
 	}
-	if (!has_defined('ZLIB_VERSION')) {
+	if (!defined('ZLIB_VERSION')) {
 		define('ZLIB_VERSION','-.-.-');
 	}
 }
