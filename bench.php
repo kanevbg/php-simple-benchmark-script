@@ -657,6 +657,7 @@ $loopMaxPhpTimes = array(
 	'8.0' => 83,
 	'8.1' => 82,
 	'8.2' => 79,
+	'8.3' => 77
 );
 // Simple and fast test times, used to adjust all test times and limits
 $dumbTestMaxPhpTimes = array(
@@ -1059,7 +1060,7 @@ function getCpuInfo($fireUpCpu = false)
 	// Raspberry Pi or other ARM board etc.
 	$cpuData = array();
 	if (@is_executable('/usr/bin/lscpu')) {
-		$cpuData = explode("\n", shell_exec('/usr/bin/lscpu'));
+		$cpuData = explode("\n", shell_exec('/usr/bin/lscpu 2>&1'));
 	}
 	foreach ($cpuData as $line) {
 		$line = explode(':', $line, 2);
