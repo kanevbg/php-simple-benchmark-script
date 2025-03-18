@@ -1,6 +1,6 @@
 <?php
 /**
- * Common php test functions
+ * Common php test functions for compression 
  * Php 4.4+
  */
 
