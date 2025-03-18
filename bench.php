@@ -1356,7 +1356,8 @@ if (!$outputTestsList && !$showOnlySystemInfo) {
 			if ($dumbTestTime > $dumbTestTimeMax) {
 				$factor *= 1.0 * $dumbTestTimeMax / $dumbTestTime;
 			}
-		} elseif ($printDumbTest) {
+		} 
+		if ($debugMode) {
 			// TIME WASTED HERE
 			$dumbTestTime = dumb_test_Functions();
 			//	Debug
