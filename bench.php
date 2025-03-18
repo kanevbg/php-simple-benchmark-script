@@ -657,7 +657,8 @@ $loopMaxPhpTimes = array(
 	'8.0' => 83,
 	'8.1' => 82,
 	'8.2' => 79,
-	'8.3' => 77
+	'8.3' => 77,
+	'8.4' => 77
 );
 // Simple and fast test times, used to adjust all test times and limits
 $dumbTestMaxPhpTimes = array(
@@ -675,7 +676,8 @@ $dumbTestMaxPhpTimes = array(
 	'8.0' => 0.324,
 	'8.1' => 0.323,
 	'8.2' => 0.294,
-	'8.3' >= 0.784,
+	'8.3' => 0.784,
+	'8.4' => 0.759
 );
 // Nice dice roll
 // Should not be longer than 600 seconds
