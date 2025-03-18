@@ -1312,7 +1312,7 @@ if (!$outputTestsList && !$showOnlySystemInfo) {
 		}
 
 	}
-
+	if ($debugMode) print_pre("recalculate limits: " $recalculateLimits);
 	if ($recalculateLimits) {
 
 		if (isset($dumbTestMaxPhpTimes[$pv])) {
