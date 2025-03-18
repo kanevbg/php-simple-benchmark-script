@@ -774,8 +774,8 @@ $testsMemoryLimits = array(
 	'33_phpinfo_generate'		=> 14,
 	'34_gd_qrcode'		=> 14,
 	'35_imagick_qrcode'		=> 8,
-	'36_zlib_compress'		=> 4,
-	'36_gzip_compress'		=> 4,
+	'36_01_zlib_deflate_compress'		=> 4,
+	'36_02_zlib_gzip_compress'		=> 4,
 	'36_bzip2_compress'		=> 4,
 	'36_lz4_compress'		=> 4,
 	'36_zstd_compress'		=> 4,
@@ -1609,7 +1609,9 @@ if (extension_loaded('zlib')) {
 	if(function_exists('gzencode')) {
 		$has_gzip = "{$colorGreen}yes{$colorReset}";
 	}
-	if (!has_defined('ZLIB_VERSION')) {define('ZLIB_VERSION','-.-.-')}
+	if (!has_defined('ZLIB_VERSION')) {
+		define('ZLIB_VERSION','-.-.-');
+	}
 }
 $has_bz2 = "{$colorYellow}no{$colorReset}";
 if (extension_loaded('bz2')) {
